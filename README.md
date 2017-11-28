@@ -22,6 +22,7 @@ print('{:<20}\tsize\tvalue\tsubtot\t\talloc'.format('Product'))
 for row in portfolio:
     subtot = row['size']*row['price']
     alloc = (subtot/total)*100 # Asset allocation (%)
-    print('{:<20}\t{:3d}\t{:6.2f}\t{:7.2f}\t\t{:2.1f}%'.format(row['product'], row['size'], row['price'], subtot, alloc))
+    print('{:<20}\t{:3d}\t{:6.2f}\t{:7.2f}\t\t{:2.1f}%'.format(
+          row['product'], row['size'], row['price'], subtot, alloc))
 print('Total: {:.2f}'.format(total))
 ```
