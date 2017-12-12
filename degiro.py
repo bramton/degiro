@@ -17,15 +17,16 @@ class degiro:
                    'isPassCodeReset': False,
                    'isRedirectToMobile': False}
         header={'content-type': 'application/json'}
+
         r = self.sess.post(url, data=json.dumps(payload))
-        
+        print('Login')
+        print('\tStatus code: {}'.format(r.status_code))
+
         # Get session id
         self.sessid = r.headers['Set-Cookie']
         self.sessid = self.sessid.split(';')[0]
         self.sessid = self.sessid.split('=')[1]
 
-        print('Login')
-        print('\tStatus code: {}'.format(r.status_code))
         print('\tSession id: {}'.format(self.sessid))
         
     # This contain loads of user data, main interest here is the 'intAccount'
@@ -34,11 +35,12 @@ class degiro:
         payload = {'sessionId': self.sessid}
 
         r = self.sess.get(url, params=payload)
+        print('Get config')
+        print('\tStatus code: {}'.format(r.status_code))
+
         data = r.json()
         self.user['intAccount'] = data['intAccount']
         
-        print('Get config')
-        print('\tStatus code: {}'.format(r.status_code))
         print('\tAccount id: {}'.format(self.user['intAccount']))
         
     # This gets a lot of data, orders, news, portfolio, currencies etc.
@@ -57,9 +59,10 @@ class degiro:
                    'sessionId': self.sessid}
 
         r = self.sess.get(url, params=payload)
-        self.data = r.json()
         print('Get data')
         print('\tStatus code: {}'.format(r.status_code))
+
+        self.data = r.json()
     
     # Only returns a summary of the portfolio
     def getPortfolioSummary(self):
