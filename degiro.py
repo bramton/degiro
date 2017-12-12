@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 class degiro:
     def __init__(self):
@@ -93,3 +94,35 @@ class degiro:
             if entry['size'] != 0:
                 portfolio.append(entry)
         return portfolio
+
+    # Returns all account transactions
+    #  fromDate and toDate are strings in the format: dd/mm/yyyy
+    def getAccountOverview(self, fromDate, toDate):
+        url = 'https://trader.degiro.nl/reporting/secure/v4/accountoverview'
+        payload = {'fromDate': fromDate,
+                   'toDate': toDate,
+                   'intAccount': self.user['intAccount'],
+                   'sessionId': self.sessid}
+
+        r = self.sess.get(url, params=payload)
+        print('Get account overview')
+        print('\tStatus code: {}'.format(r.status_code))
+        
+        data = r.json()
+        movs = []
+        for rmov in data['data']['cashMovements']:
+            mov = dict()
+            # Reformat timezone part: +01:00 -> +0100
+            date = ''.join(rmov['date'].rsplit(':',1))
+            date = datetime.strptime(date,'%Y-%m-%dT%H:%M:%S%z')
+            mov['date'] = date
+            mov['change'] = rmov['change']
+            mov['currency'] = rmov['currency']
+            mov['description'] = rmov['description']
+            mov['type'] = rmov['type']
+            if 'orderId' in rmov:
+                 mov['orderId'] = rmov['orderId']
+            if 'productId' in rmov:
+                 mov['productId'] = rmov['productId']
+            movs.append(mov)        
+        return movs
