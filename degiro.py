@@ -90,6 +90,8 @@ class degiro:
                 if 'value' in y:
                     v = y['value']
                 entry[k] = v
+            # Some bonds tend to have a non-unit size
+            entry['size'] *= entry['contractSize']
             # Also historic equities are returned, let's omit them
             if entry['size'] != 0:
                 portfolio.append(entry)
