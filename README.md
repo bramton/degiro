@@ -4,7 +4,7 @@ Very basic **unofficial** Python API for [DeGiro](https://www.degiro.nl). This A
 :warning: DeGiro could change their API at any moment, if something is not working, please open an issue.
 
 ## Security
-Your password is stored plain text in a JSON file. Take adequate measures !, e.g. `chmod` it to `600`.
+Your password is stored plain text in a JSON file. Take adequate measures !, e.g. `chmod` it to `600`. The API also won't work for users who have 2FA enabled.
 
 ## Example usage
 ```python
@@ -22,7 +22,7 @@ print('{:<20}\tsize\tvalue\tsubtot\t\talloc'.format('Product'))
 for row in portfolio:
     subtot = row['size']*row['price']
     alloc = (subtot/total)*100 # Asset allocation (%)
-    print('{:<20}\t{:3d}\t{:6.2f}\t{:7.2f}\t\t{:2.1f}%'.format(
+    print('{:<20}\t{:5.1f}\t{:6.2f}\t{:7.2f}\t\t{:2.1f}%'.format(
           row['product'], row['size'], row['price'], subtot, alloc))
 print('Total: {:.2f}'.format(total))
 ```
