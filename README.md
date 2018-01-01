@@ -4,7 +4,7 @@ Very basic **unofficial** Python API for [DeGiro](https://www.degiro.nl). This A
 :warning: DeGiro could change their API at any moment, if something is not working, please open an issue.
 
 ## Security
-Your password is stored plain text in a JSON file. Take adequate measures !, e.g. `chmod` it to `600`.
+Your password is stored plain text in a JSON file. Take adequate measures !, e.g. `chmod` it to `600`. The API also won't work for users who have 2FA enabled.
 
 ## Example usage
 ```python
