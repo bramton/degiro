@@ -44,7 +44,7 @@ class degiro:
         
         print('\tAccount id: {}'.format(self.user['intAccount']))
         
-    # This gets a lot of data, orders, news, portfolio, currencies etc.
+    # This gets a lot of data, orders, news, portfolio, cash funds etc.
     def getData(self):
         url = 'https://trader.degiro.nl/trading/secure/v5/update/'
         url += str(self.user['intAccount'])+';'
@@ -64,23 +64,40 @@ class degiro:
         print('\tStatus code: {}'.format(r.status_code))
 
         self.data = r.json()
+
+    # Get the cash funds
+    def getCashFunds(self):
+        if self.data == None:
+            self.getData()       
+        cashFunds = dict()
+        for cf in self.data['cashFunds']['value']:
+            entry = dict()
+            for y in cf['value']:
+                # Useful if the currency code is the key to the dict
+                if y['name'] == 'currencyCode':
+                    key = y['value']
+                    continue
+                entry[y['name']] = y['value']
+            cashFunds[key] = entry
+        return cashFunds
     
     # Only returns a summary of the portfolio
     def getPortfolioSummary(self):
-        if self.data == None:
-            self.getData()
-        resv = dict()
-        for v in self.data['totalPortfolio']['value']:
-            resv[v['name']] = v['value']
+        pf = self.getPortfolio()
+        cf = self.getCashFunds()
+        tot = 0
+        for eq in pf:
+            tot += eq['value']     
 
         pfSummary = dict()
-        pfSummary['equity'] = resv['portVal']
-        pfSummary['cash'] = resv['cash']
-        pfSummary['total'] = resv['total']
+        pfSummary['equity'] = tot
+        pfSummary['cash'] = cf['EUR']['value']
         return pfSummary
     
     # Returns the entire portfolio
     def getPortfolio(self):
+        if self.data == None:
+            self.getData()       
         portfolio = []
         for row in self.data['portfolio']['value']:
             entry = dict()
