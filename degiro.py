@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+from collections import defaultdict
 
 class degiro:
     def __init__(self):
@@ -86,7 +87,7 @@ class degiro:
         pf = self.getPortfolio()
         cf = self.getCashFunds()
         tot = 0
-        for eq in pf:
+        for eq in pf['PRODUCT'].values():
             tot += eq['value']     
 
         pfSummary = dict()
@@ -107,12 +108,37 @@ class degiro:
                 if 'value' in y:
                     v = y['value']
                 entry[k] = v
-            # Some bonds tend to have a non-unit size
-            entry['size'] *= entry['contractSize']
             # Also historic equities are returned, let's omit them
             if entry['size'] != 0:
                 portfolio.append(entry)
-        return portfolio
+
+        ## Restructure portfolio and add extra data
+        portf_n = defaultdict(dict)
+        # Restructuring
+        for r in portfolio:
+            pos_type = r['positionType']
+            pid = r['id'] # Product ID
+            del(r['positionType'])
+            del(r['id'])
+            portf_n[pos_type][pid]= r
+
+        # Adding extra data
+        url = 'https://trader.degiro.nl/product_search/secure/v5/products/info'
+        params = {'intAccount': str(self.user['intAccount']),
+                  'sessionId': self.sessid}
+        header={'content-type': 'application/json'}
+        pid_list = list(portf_n['PRODUCT'].keys())
+        r = self.sess.post(url, headers=header, params=params, data=json.dumps(pid_list))
+        print('\tGetting extra data')
+        print('\t\tStatus code: {}'.format(r.status_code))
+
+        for k,v in r.json()['data'].items():
+            del(v['id'])
+            # Some bonds tend to have a non-unit size
+            portf_n['PRODUCT'][k]['size'] *= v['contractSize']
+            portf_n['PRODUCT'][k].update(v)
+
+        return portf_n
 
     # Returns all account transactions
     #  fromDate and toDate are strings in the format: dd/mm/yyyy
