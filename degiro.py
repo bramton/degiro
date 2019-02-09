@@ -20,7 +20,7 @@ class degiro:
                    'isRedirectToMobile': False}
         header={'content-type': 'application/json'}
 
-        r = self.sess.post(url, data=json.dumps(payload))
+        r = self.sess.post(url, headers=header, data=json.dumps(payload))
         print('Login')
         print('\tStatus code: {}'.format(r.status_code))
 
@@ -41,7 +41,7 @@ class degiro:
         print('\tStatus code: {}'.format(r.status_code))
 
         data = r.json()
-        self.user['intAccount'] = data['intAccount']
+        self.user['intAccount'] = data['data']['intAccount']
         
         print('\tAccount id: {}'.format(self.user['intAccount']))
         
