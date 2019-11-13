@@ -1,5 +1,6 @@
 import requests
 import json
+import getpass
 from datetime import datetime
 from collections import defaultdict
 
@@ -8,8 +9,11 @@ class degiro:
         self.user = dict()
         self.data = None
     
-    def login(self, conf_path):
-        conf = json.load(open(conf_path))
+    def login(self, conf_path=None, with2fa:bool=False):
+        if(conf_path==None):
+            conf = dict(username=input("Username: "), password=getpass.getpass())
+        else:
+            conf = json.load(open(conf_path))
         self.sess = requests.Session()
         
         # Login
@@ -20,6 +24,9 @@ class degiro:
                    'isRedirectToMobile': False}
         header={'content-type': 'application/json'}
 
+        if(with2fa):
+            payload['oneTimePassword']=getpass.getpass("2FA Token: ")
+            url+='/totp'
         r = self.sess.post(url, headers=header, data=json.dumps(payload))
         print('Login')
         print('\tStatus code: {}'.format(r.status_code))
@@ -171,3 +178,8 @@ class degiro:
                  mov['productId'] = rmov['productId']
             movs.append(mov)        
         return movs
+
+
+if __name__ =='__main__':
+    deg = degiro()
+    deg.login(with2fa=True)
