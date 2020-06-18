@@ -192,7 +192,7 @@ class degiro:
         print('Get Transactions overview')
         print('\tStatus code: {}'.format(r.status_code))
 
-        data = r.json()
+        data = r.json()['data']
         return data
 
     # Returns product info 
@@ -206,7 +206,7 @@ class degiro:
         print(f'Get Products info for {ids}')
         print('\tStatus code: {}'.format(r.status_code))
 
-        data = r.json()
+        data = r.json()['data']
         return data
 
 
