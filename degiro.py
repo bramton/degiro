@@ -179,6 +179,36 @@ class degiro:
             movs.append(mov)        
         return movs
 
+    # Returns historical transactions
+    #  fromDate and toDate are strings in the format: dd/mm/yyyy
+    def getTransactions(self, fromDate, toDate):
+        url = 'https://trader.degiro.nl/reporting/secure/v4/transactions'
+        payload = {'fromDate': fromDate,
+                   'toDate': toDate,
+                   'intAccount': self.user['intAccount'],
+                   'sessionId': self.sessid}
+
+        r = self.sess.get(url, params=payload)
+        print('Get Transactions overview')
+        print('\tStatus code: {}'.format(r.status_code))
+
+        data = r.json()['data']
+        return data
+
+    # Returns product info 
+    #  ids is a list of product ID (from Degiro)
+    def getProductByIds(self, ids):
+        url = "https://trader.degiro.nl/product_search/secure/v5/products/info"
+        header = {'content-type': 'application/json'}
+        params = {'intAccount': str(self.user['intAccount']), 'sessionId': self.sessid}
+        r = self.sess.post(url, headers=header, params=params, data=json.dumps([str(id) for id in ids]))
+
+        print(f'Get Products info for {ids}')
+        print('\tStatus code: {}'.format(r.status_code))
+
+        data = r.json()['data']
+        return data
+
 
 if __name__ =='__main__':
     deg = degiro()
