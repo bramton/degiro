@@ -1,3 +1,8 @@
+# Update :sloth:
+As you have probably noticed, this repo is not maintained anymore. 
+
+For a worthy alternative, please have a look at [degiro-connector](https://github.com/Chavithra/degiro-connector)
+
 # Unofficial DeGIRO Python API
 Very basic **unofficial** Python API for [DeGiro](https://www.degiro.nl). This API is only able to get details about your portfolio. It cannot be used for automatic trading. For a way more extensive Node.js API have a look at [pladarias](https://github.com/pladaria/degiro) work.
 
